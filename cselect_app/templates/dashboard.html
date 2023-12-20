@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% block navbar %}
+    {% include 'header.html' %}
+{% endblock %}
+{% block title %}
+    Ecommerce
+{% endblock %}
+
+{% block content %}
+
+<main>
+    {% load static %}
+    <ul id="cd-gallery-items" class="cd-container">
+        {% for item in product_items %}
+            <li>
+                <div class="card">
+                    <div class="card-img">
+                        <img src="{% static 'img/' %}{{ item.product_code }}.png" alt="Preview image">
+                    </div>
+                    <div class="card-title">{{ item.product_name }}</div>
+                    <div class="card-subtitle">{{ item.description }}</div>
+                    <hr class="card-divider">
+                    <div class="card-footer">
+                        <div class="card-price"><span>$</span> {{ item.price }}</div>
+                        <button class="card-btn" onclick="addToCart('{{ item.id }}', '{{ item.product_name }}', {{ item.price }})">
+
+
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="m397.78 316h-205.13a15 15 0 0 1 -14.65-11.67l-34.54-150.48a15 15 0 0 1 14.62-18.36h274.27a15 15 0 0 1 14.65 18.36l-34.6 150.48a15 15 0 0 1 -14.62 11.67zm-193.19-30h181.25l27.67-120.48h-236.6z"></path><path d="m222 450a57.48 57.48 0 1 1 57.48-57.48 57.54 57.54 0 0 1 -57.48 57.48zm0-84.95a27.48 27.48 0 1 0 27.48 27.47 27.5 27.5 0 0 0 -27.48-27.47z"></path><path d="m368.42 450a57.48 57.48 0 1 1 57.48-57.48 57.54 57.54 0 0 1 -57.48 57.48zm0-84.95a27.48 27.48 0 1 0 27.48 27.47 27.5 27.5 0 0 0 -27.48-27.47z"></path><path d="m158.08 165.49a15 15 0 0 1 -14.23-10.26l-25.71-77.23h-47.44a15 15 0 1 1 0-30h58.3a15 15 0 0 1 14.23 10.26l29.13 87.49a15 15 0 0 1 -14.23 19.74z"></path></svg>
+                        </button>
+                    </div>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+</main>
+
+<div id="cd-cart">
+    <h2>Cart</h2>
+    <ul class="cd-cart-items text-black">
+        {% for item in cart_items %}
+            <li>
+                <span class="cd-qty">{{ item.quantity }}x</span> {{ item.product.product_name }}
+                <div class="cd-price">${{ item.product.price }}</div>  <!-- Accessing the product price -->
+                <a href="{% url 'remove_from_cart' item.id %}" class="cd-item-remove cd-img-replace">Remove</a>
+            </li>
+        {% endfor %}
+    </ul>
+    <div class="cd-cart-total">
+        <p>Total <span id="cart-total">${{ cart.total }}</span></p>
+    </div>
+    <a href="{% url 'cart' %}" class="checkout-btn">Checkout</a>
+    <p class="cd-go-to-cart"><a href="#0">Go to cart page</a></p>
+</div>
+
+<script>
+    function addToCart(productId, productName, productPrice) {
+        fetch('/add_to_cart/' + productId + '/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'), 
+            },
+            body: JSON.stringify({}),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Update the UI to reflect the added item
+                updateCartUI(productName, productPrice);
+            } else {
+                console.error('Error adding item to cart:', data.message);
+            }
+        })
+        .catch(error => console.error('Error adding item to cart:', error));
+    }
+
+    function updateCartUI(productName, productPrice) {
+        // Update the cart items UI
+        var cartItemsList = document.querySelector('#cd-cart .cd-cart-items');
+        var cartTotalElement = document.querySelector('#cart-total');
+
+        // Create a new list item for the added item
+        var newItem = document.createElement('li');
+        newItem.innerHTML = '<span class="cd-qty">1x</span> ' + productName + '<div class="cd-price">$' + productPrice + '</div> <a href="#" class="cd-item-remove cd-img-replace" onclick="removeFromCart(this)">Remove</a>';
+
+        // Append the new item to the cart items list
+        cartItemsList.appendChild(newItem);
+
+        // Update the total cart price
+        var totalCartPrice =cartTotalElement.textContent.replace('$', '') + productPrice;
+        cartTotalElement.textContent = '$' + totalCartPrice;
+    }
+
+    function removeFromCart(removeLink) {
+        // Send a request to remove the item from the cart
+        var itemElement = removeLink.parentNode;
+        var itemId = itemElement.dataset.itemId;
+
+        fetch('/remove_from_cart/' + itemId + '/', {
+            method: 'GET',
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Remove the item from the UI
+                itemElement.remove();
+            } else {
+                console.error('Error removing item from cart:', data.message);
+            }
+        })
+        .catch(error => console.error('Error removing item from cart:', error));
+    }
+
+    // Function to get the CSRF token from cookies
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+<script src="/static/js/main.js"></script> 
+{% endblock %}

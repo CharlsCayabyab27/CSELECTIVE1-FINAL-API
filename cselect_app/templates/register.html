@@ -1,0 +1,54 @@
+
+{% extends 'base.html' %}
+{% block navbar %}
+    {% include 'register_header.html' %}
+{% endblock %}
+
+{% block title %}
+    Register Page
+{% endblock %}
+
+{% block content %}
+<body class="text-center">
+    <div class="container" id="form-register">
+        <form method="POST" action="{% url 'register' %}" class="form-register" style="color:white">
+            {% csrf_token %}
+            {{ form.errors }}
+            <h1 class="h3 mb-3 font-weight-normal">
+                Create your Account
+            </h1>
+            <br>
+
+            {{ form.username.label_tag }}
+            {{ form.username }}
+            {{ form.username.errors }}
+
+            {{ form.email.label_tag }}
+            {{ form.email }}
+            {{ form.email.errors }}
+
+            {{ form.phone.label_tag }}
+            {{ form.phone }}
+            {{ form.phone.errors }}
+
+            {{ form.password1.label_tag }}
+            {{ form.password1 }}
+            {{ form.password1.errors }}
+
+            {{ form.password2.label_tag }}
+            {{ form.password2 }}
+            {{ form.password2.errors }}
+
+            <br>
+
+            <div class="checkbox mb-3">
+               <h6>Already have an account?</h6>
+               <a class="btn btn-sm btn-secondary" href="{% url 'login' %}">Login</a>
+            </div>
+
+            <button type="submit" class="btn btn-lg btn-block btn-info">Register</button>
+
+        </form>
+    </div>
+</body>
+{% endblock %}

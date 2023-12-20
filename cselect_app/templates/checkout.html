@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Checkout
+{% endblock %}
+
+{% block content %}
+
+<div class='card-container' style='margin-top: 10rem; margin-left:50px; width: 80%;'>
+    <div class="row">
+        <div class="col-75">
+            <div class="container">
+                <form action="{% url 'checkout' %}" method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-50">
+                            <h3>Billing Address</h3>
+                            <label for="fname"><i class="fa fa-user"></i> Full Name</label>
+                            <input class='form-control' type="text" id="fname" name="fname" placeholder="Juan Delacruz">
+
+                            <label for="email"><i class="fa fa-user"></i> Email</label>
+                            <input class='form-control' type="email" id="email" name="email" placeholder="JuanDelacruz@gmail.com"><br>
+
+                            <label for="address"><i class="fa fa-user"></i> Address</label>
+                            <input class='form-control' type="text" id="address" name="address" placeholder="123 ABC street">
+
+                            <label for="city"><i class="fa fa-user"></i> City</label>
+                            <input class='form-control' type="text" id="city" name="city" placeholder="Puerto Princesa">
+
+                            <label for="zipcode"><i class="fa fa-user"></i> Zip</label>
+                            <input class='form-control' type="text" id="zipcode" name="zipcode" placeholder="0000">
+                        </div>
+
+                        <div class="col-50">
+                            <h3>Payment</h3>
+                            <label for="cname">Name on Card</label>
+                            <input class='form-control' type="text" id="cname" name="cardname" placeholder="">
+
+                            <label for="ccnum">Credit Card Number</label>
+                            <input class='form-control' type="text" id="ccnum" name="ccnum" placeholder="">
+
+                            <label for="expmonth">Exp Month</label>
+                            <input class='form-control' type="text" id="expmonth" name="expmonth" placeholder="April">
+
+                            <div class="row">
+                                <div class="col-50">
+                                    <label for="expyear">Exp Year</label>
+                                    <input class='form-control' type="text" id="expyear" name="expyear" placeholder="2018">
+                                </div>
+                                <div class="col-50">
+                                    <label for="cvv">CVV</label>
+                                    <input class='form-control' type="text" id="cvv" name="cvv" placeholder="352">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <label>
+                        <input type="checkbox" checked="checked" name="sameadr"> Shipping address same as billing
+                    </label>
+                    <input type="submit" value="Continue to checkout" class="btn btn-fill btn-danger">
+                </form>
+            </div>
+        </div>
+
+        <div class="col-25">
+            <div class="container text-black">
+                <h4>Cart <span class="price" style="color: black"><i class="fa fa-shopping-cart"></i> <b>{{ cart_items_count }}</b></span></h4>
+                {% if cart_items %}
+                    {% for item in cart_items %}
+                        <p>
+                            <a href="#">{{ item.product.product_name  }}</a>
+                            <span class="price">${{ item.product.price }}</span>
+                            <span class="quantity">Quantity: {{ item.quantity }}</span>
+                        </p>
+                    
+                    <hr>
+                    <p>Total <span class="price" style="color: black"><b>${{ total_amount }}</b></span></p>
+                    {% endfor %}
+                {% else %}
+                    <p>Your cart is empty.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
