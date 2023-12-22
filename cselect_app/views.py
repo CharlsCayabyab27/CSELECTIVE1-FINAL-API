@@ -7,17 +7,20 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.contrib.auth.views import LoginView
 from django.views import View
+from django.views.generic import TemplateView
 from .models import CartItem, Order, Status, OrderDetail, Product, Cart, NewUser
 from django.utils.decorators import method_decorator
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework import viewsets, status
-from rest_framework.decorators import api_view
+from rest_framework import viewsets, status, generics, permissions
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView
+from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.views import LogoutView
 from django.http import HttpResponseRedirect
+
 
 from django.http import Http404
 from .serializers import (
@@ -291,4 +294,100 @@ class CartItemListView(ListAPIView):
             queryset = queryset.filter(cart__user__email=email)
         return queryset
 
+    
+class ProductUpdateView(generics.UpdateAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    permission_class = [IsAuthenticated]
+    
+class ProductDeleteView(generics.DestroyAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    permission_class = [IsAuthenticated]
+
+class CartItemDeleteView(generics.DestroyAPIView):
+    queryset = CartItem.objects.all()
+    serializer_class = CartItemSerializer
+    permission_class = [IsAuthenticated]
+    
+
+class CartItemUpdateView(generics.UpdateAPIView):
+    queryset = CartItem.objects.all()
+    serializer_class = CartItemSerializer  # Fix the typo here
+    permission_classes = [IsAuthenticated]
+
+class UserUpdateView(generics.UpdateAPIView):
+    queryset = NewUser.objects.all()
+    serializer_class = NewUserSerializer
+    permission_class = [IsAuthenticated]
+
+class UserDeleteView(generics.DestroyAPIView):
+    queryset = NewUser.objects.all()
+    serializer_class = NewUserSerializer
+    permission_class = [IsAuthenticated]
+    
+
+class OrderDeleteView(generics.DestroyAPIView):
+    queryset = Order.objects.all()
+    serializer_class= OrderSerializer
+    permission_class = [IsAuthenticated]
+    
+class OrderUpdateView(generics.UpdateAPIView):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class UserCreateView(generics.CreateAPIView):
+    queryset = NewUser.objects.all()
+    serializer_class = NewUserSerializer
+    permission_classes = [permissions.IsAuthenticated]  # Fix the attribute name here
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+class ProductCreateView(generics.CreateAPIView):
+    queryset = Product.objects.all()
+    serializer_class= ProductSerializer
+    permission_class = [IsAuthenticated]
+
+class OrderCreateView(generics.CreateAPIView):
+    queryset = Order.objects.all()
+    serializer_class= OrderSerializer
+    permission_class = [IsAuthenticated]
+    
+class CheckoutView(generics.UpdateAPIView):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        user = self.request.user
+        order = Order.objects.filter(user=user, status='cart').first()
+        return order
+    
+class UserUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = NewUser.objects.all()
+    serializer_class = NewUserSerializer
+    permission_classes = [IsAuthenticated]
+
+class ProductUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
+    queryset =Product.objects.all()
+    serializer_class = ProductSerializer
+    permission_classes = [IsAuthenticated]
+    
+class OrderUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
+    queryset =Order.objects.all()
+    serializer_class = OrderSerializer
+    permission_classes = [IsAuthenticated]
+    
+    
+
+    
+
+
+    
+    
+
+    
     

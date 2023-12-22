@@ -44,6 +44,37 @@ urlpatterns = [
     path('api/orders/', views.OrderListView.as_view(), name='order-list'),
     path('api/users/', views.NewUserListView.as_view(), name='NewUser-list'),
     path('api/cart-items/', views.CartItemListView.as_view(), name='CartItem-list'),
+    
+    path('api/cart-items/update/<int:pk>/', views.CartItemUpdateView.as_view(), name='CartItem-list-Update'),
+    path('api/cart-items/delete/<int:pk>/', views.CartItemDeleteView.as_view(), name='CartItem-list-Delete'),
+
+    path('api/products/update/<int:pk>/', views.ProductUpdateView.as_view(), name='Product-Update'),
+    path('api/products/delete/<int:pk>/', views.ProductDeleteView.as_view(), name='Product-Delete'),
+    
+    path('api/orders/update/<int:pk>/', views.OrderUpdateView.as_view(), name='Orders-Update'),
+    path('api/orders/delete/<int:pk>/', views.OrderDeleteView.as_view(), name='Orders-Delete'),
+    
+    path('api/users/update/<int:pk>/', views.UserUpdateView.as_view(), name='NewUser-Update'),
+    path('api/users/delete/<int:pk>/', views.UserDeleteView.as_view(), name='NewUser-Delete'),
+    
+    path('api/users/create/', views.UserCreateView.as_view(), name='NewUser-Create'),
+    
+    path('api/product/create/', views.ProductCreateView.as_view(), name='NewUser-Create'),
+    path('api/order/create/', views.OrderCreateView.as_view(), name='NewUser-Create'),
+    
+    path('api/checkout/', views.CheckoutView.as_view(), name='NewUser-Create'),
+    
+    path('api/users/update-delete/<int:pk>', views.UserUpdateDeleteView.as_view(), name='User-UpdateDelete'),
+    
+    path('api/products/update-delete/<int:pk>', views.ProductUpdateDeleteView.as_view(), name='Product-UpdateDelete'),
+    
+    path('api/orders/update-delete/<int:pk>', views.OrderUpdateDeleteView.as_view(), name='Order-UpdateDelete'),
+    
+    
+
+    
+    
+    
     path('graphql/', GraphQLView.as_view(graphiql=True, schema=schema)),
     
 ]
